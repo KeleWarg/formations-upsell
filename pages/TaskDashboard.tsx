@@ -61,7 +61,7 @@ function SidebarNav() {
   ];
 
   return (
-    <nav className="hidden tablet:flex w-[220px] bg-white border-r border-neutral-100 flex-col py-lg shrink-0">
+    <nav className="hidden lg:flex w-[220px] bg-white border-r border-neutral-100 flex-col py-lg shrink-0">
       {navItems.map((item, i) => {
         const Icon = item.icon;
         return (
@@ -266,6 +266,129 @@ function TaskRow({ task, onGoToTask }: TaskRowProps) {
   );
 }
 
+// ─── YOUR NEXT STEPS SECTION ─────────────────────────────
+
+function NextStepsSection() {
+  return (
+    <div className="flex flex-col gap-lg">
+      <h2 className="text-[20px] tablet:text-[24px] font-bold text-text-dark-blue">
+        Your Next Steps
+      </h2>
+
+      {/* Step card */}
+      <div className="bg-white rounded-lg border border-neutral-100 p-lg tablet:p-xl">
+        {/* Step header */}
+        <div className="flex items-center gap-md mb-lg">
+          <div className="w-8 h-8 rounded-full border-2 border-primary-500 flex items-center justify-center shrink-0">
+            <span className="text-body-xs font-bold text-primary-500">1</span>
+          </div>
+          <h3 className="text-body-lg font-bold text-text-dark-blue">
+            Set Your My Business Checking Account
+          </h3>
+        </div>
+
+        {/* Advantages badge */}
+        <div className="inline-flex items-center gap-xs bg-neutral-50 border border-neutral-100 rounded-full px-md py-xs mb-lg">
+          <svg className="w-4 h-4 text-amber-400" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2l2.09 6.26L20.18 9l-5.09 3.74L16.82 19 12 15.27 7.18 19l1.73-6.26L3.82 9l6.09-.74z" />
+          </svg>
+          <span className="text-body-xs font-medium text-text-dark-blue">
+            Advantages Of Separating Your Business Account
+          </span>
+        </div>
+
+        {/* Description + bullets */}
+        <p className="text-body-sm text-neutral-500 mb-md">
+          Separating your personal and business finances is a necessary step when establishing your business. Open a free business account to:
+        </p>
+        <ul className="list-disc list-inside space-y-xs text-body-sm text-neutral-500 mb-md">
+          <li>
+            <strong className="text-text-dark-blue">Save time and money</strong> on your tax filings by simplifying expense tracking.
+          </li>
+          <li>
+            <strong className="text-text-dark-blue">Streamline cash flow management,</strong> and improve budgeting.
+          </li>
+          <li>
+            <strong className="text-text-dark-blue">Protect your personal assets</strong> from business liabilities.
+          </li>
+        </ul>
+        <a href="#" className="text-primary-500 text-body-sm font-medium hover:underline inline-block mb-xl">
+          Learn more
+        </a>
+
+        {/* Bank partner card */}
+        <div className="border border-neutral-200 rounded-lg overflow-hidden">
+            {/* Bank logo */}
+            <div className="flex items-center justify-center px-xl border-b border-neutral-100">
+              <img src="/partners/us-bank.png" alt="U.S. Bank" className="w-[180px] object-contain" />
+            </div>
+
+            {/* Bonus banner */}
+            <div className="bg-[#E8F5E9] px-lg py-sm flex items-center gap-xs">
+              <svg className="w-5 h-5 text-secondary-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M22 11.08V12a10 10 0 11-5.93-9.14" />
+                <polyline points="22 4 12 14.01 9 11.01" />
+              </svg>
+              <span className="text-body-sm text-text-dark-blue">
+                Open a free checking account and earn a <strong className="text-secondary-600">$400 bonus*</strong>
+              </span>
+            </div>
+
+            {/* Benefits list */}
+            <div className="px-lg py-lg space-y-md">
+              {[
+                "No monthly maintenance fees",
+                "Free mobile card reader with $0 software fee",
+                "Free same-day access to funds",
+                "Unlimited digital transactions and 25 teller transactions per cycle",
+                "Use bill pay in U.S. Bank online or mobile banking to track and pay all your bills",
+                "FDIC insured deposits up to $250,000",
+              ].map((benefit, i) => (
+                <div key={i} className="flex items-start gap-sm">
+                  <svg className="w-4 h-4 text-secondary-500 shrink-0 mt-[2px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                  <span className="text-body-xs text-neutral-600">{benefit}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Divider */}
+            <div className="border-t border-neutral-100" />
+
+            {/* Social proof */}
+            <div className="flex items-center justify-center gap-sm px-lg py-md">
+              <div className="flex -space-x-2">
+                <div className="w-7 h-7 rounded-full bg-primary-100 border-2 border-white" />
+                <div className="w-7 h-7 rounded-full bg-primary-200 border-2 border-white" />
+                <div className="w-7 h-7 rounded-full bg-primary-300 border-2 border-white" />
+              </div>
+              <span className="text-body-xs text-secondary-500 font-medium">
+                Millions of businesses trust U.S. Bank as their banking partner
+              </span>
+            </div>
+
+            {/* CTA */}
+            <div className="px-lg pb-lg flex justify-center">
+              <button className="bg-primary-500 hover:bg-primary-600 text-white text-body-sm font-semibold px-2xl py-md rounded-full transition-colors w-full max-w-[320px]">
+                Speak with a Banking Specialist
+              </button>
+            </div>
+
+            {/* Disclaimer */}
+            <div className="px-lg pb-lg">
+              <p className="text-[10px] text-neutral-400 leading-[14px]">
+                <Info className="w-3 h-3 inline-block mr-[2px] -mt-[1px]" />
+                Earn a $400 bonus by opening a U.S. Bank Business Essentials Account with promo code Q4AFL25 and complete qualifying activities, subject to certain terms and limitations.{" "}
+                <a href="#" className="underline">See full details</a>.
+              </p>
+            </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── MOBILE BOTTOM NAV ───────────────────────────────────
 
 function MobileBottomNav() {
@@ -277,7 +400,7 @@ function MobileBottomNav() {
   ];
 
   return (
-    <nav className="tablet:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-neutral-100 flex items-center justify-around py-sm px-md z-50">
+    <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-neutral-100 flex items-center justify-around py-sm px-md z-50">
       {navItems.map((item, i) => {
         const Icon = item.icon;
         return (
@@ -379,7 +502,7 @@ export default function TaskDashboard({ companyName = "Taylor Tacos, LLC" }: Tas
         <SidebarNav />
 
         {/* Main content area */}
-        <div className="flex-1 flex flex-col pb-[72px] tablet:pb-0">
+        <div className="flex-1 flex flex-col pb-[72px] lg:pb-0">
           <MotionStagger className="flex-1 flex flex-col">
             {/* Company header */}
             <MotionFadeIn>
@@ -414,6 +537,11 @@ export default function TaskDashboard({ companyName = "Taylor Tacos, LLC" }: Tas
                   </MotionFadeIn>
                 ))}
               </MotionStagger>
+            </MotionFadeIn>
+
+            {/* Your Next Steps section */}
+            <MotionFadeIn className="px-lg tablet:px-2xl py-lg tablet:py-xl max-w-[1100px]">
+              <NextStepsSection />
             </MotionFadeIn>
           </MotionStagger>
         </div>
