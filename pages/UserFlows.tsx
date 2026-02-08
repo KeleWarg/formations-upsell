@@ -265,12 +265,6 @@ export default function UserFlows() {
             Click any screen to view it live. Screens are wired together as a clickable prototype.
           </p>
         </div>
-        <Link
-          href="/accept-payment-prompt"
-          className="text-body-xs font-medium text-primary-500 hover:underline"
-        >
-          ← Start flow
-        </Link>
       </header>
 
       {/* Tab switcher */}
