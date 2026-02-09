@@ -465,7 +465,7 @@ function EINReceivedModal({ companyName, onDismiss, onSetUpBank }: EINReceivedMo
             <Bell className="w-8 h-8 text-white" />
           </div>
           <h2 className="text-title-sm font-bold text-white mb-xs">
-            Your EIN Has Been Received!
+            Your EIN is ready!
           </h2>
           <p className="text-body-sm text-white/80">
             Great news for {companyName}
