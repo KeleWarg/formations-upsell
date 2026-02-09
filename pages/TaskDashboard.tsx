@@ -36,6 +36,7 @@ interface ChecklistTask {
   description: string;
   category: string;
   categoryColor: string;
+  dotColor: string;
   status: TaskStatus;
   bonusText?: string;
   lockedText?: string;
@@ -229,7 +230,7 @@ function TaskRow({ task, onGoToTask }: TaskRowProps) {
           {/* Category badge row */}
           <div className="flex items-center gap-sm flex-wrap">
             <span className="flex items-center gap-[4px] text-[11px] font-medium">
-              <span className={`w-[6px] h-[6px] rounded-full ${task.categoryColor.split(" ")[1]?.replace("text-", "bg-") || "bg-neutral-400"}`} />
+              <span className={`w-[6px] h-[6px] rounded-full ${task.dotColor}`} />
               <span className="text-neutral-500">{task.category}</span>
             </span>
             {task.lockedText && (
@@ -529,6 +530,103 @@ function EINReceivedModal({ companyName, onDismiss, onSetUpBank }: EINReceivedMo
   );
 }
 
+// ─── EIN PENDING MODAL ──────────────────────────────────
+
+interface EINPendingModalProps {
+  companyName: string;
+  onDismiss: () => void;
+}
+
+function EINPendingModal({ companyName, onDismiss }: EINPendingModalProps) {
+  const handleViewChecklist = () => {
+    onDismiss();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center">
+      {/* Backdrop */}
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onDismiss} />
+
+      {/* Modal */}
+      <div className="relative bg-white rounded-2xl shadow-2xl w-[90%] max-w-[480px] mx-auto overflow-hidden">
+        {/* Close button */}
+        <button
+          onClick={onDismiss}
+          className="absolute top-md right-md w-8 h-8 rounded-full bg-white/30 hover:bg-white/50 flex items-center justify-center transition-colors z-10"
+        >
+          <X className="w-4 h-4 text-white" />
+        </button>
+
+        {/* Header */}
+        <div className="bg-gradient-to-br from-primary-500 to-primary-600 px-xl pt-xl pb-lg text-center">
+          <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center mx-auto mb-md">
+            <Clock className="w-8 h-8 text-white" />
+          </div>
+          <h2 className="text-title-sm font-bold text-white mb-xs">
+            Your LLC Filing Is In Progress!
+          </h2>
+          <p className="text-body-sm text-white/80">
+            {companyName} is on its way
+          </p>
+        </div>
+
+        {/* Content */}
+        <div className="px-xl py-xl">
+          {/* Status info */}
+          <div className="bg-amber-50 border border-amber-200 rounded-lg px-lg py-md flex items-center gap-md mb-xl">
+            <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center shrink-0">
+              <Clock className="w-5 h-5 text-amber-600" />
+            </div>
+            <div>
+              <p className="text-body-sm font-bold text-text-dark-blue">EIN Pending</p>
+              <p className="text-body-xs text-neutral-500">We&apos;ll notify you as soon as it&apos;s received from the IRS.</p>
+            </div>
+          </div>
+
+          {/* What to do in the meantime */}
+          <p className="text-body-xs font-semibold text-neutral-400 uppercase tracking-wide mb-md">
+            While You Wait
+          </p>
+          <p className="text-body-sm text-neutral-600 mb-lg">
+            Get a head start on setting up your business. Your launch checklist has tasks you can complete right now, including opening a business bank account.
+          </p>
+
+          {/* Checklist preview */}
+          <div className="border border-neutral-200 rounded-lg p-md space-y-sm mb-xl">
+            {[
+              { label: "Set up a business bank account", highlight: true },
+              { label: "Get business insurance", highlight: false },
+              { label: "Review your license requirements", highlight: false },
+            ].map((item, i) => (
+              <div key={i} className="flex items-center gap-sm">
+                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${item.highlight ? "border-primary-500" : "border-neutral-300"}`}>
+                  <span className={`text-[10px] font-bold ${item.highlight ? "text-primary-500" : "text-neutral-300"}`}>{i + 1}</span>
+                </div>
+                <span className={`text-body-xs ${item.highlight ? "font-medium text-text-dark-blue" : "text-neutral-400"}`}>{item.label}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* CTA */}
+          <button
+            onClick={handleViewChecklist}
+            className="w-full bg-primary-500 hover:bg-primary-600 text-white text-body-sm font-semibold py-md rounded-full transition-colors mb-sm"
+          >
+            View Your Business Launch Checklist
+          </button>
+          <button
+            onClick={onDismiss}
+            className="w-full text-primary-500 text-body-sm font-medium py-sm hover:underline"
+          >
+            Dismiss
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── MOBILE BOTTOM NAV ───────────────────────────────────
 
 function MobileBottomNav() {
@@ -568,13 +666,30 @@ interface TaskDashboardProps {
 
 export default function TaskDashboard({ companyName = "Taylor Tacos, LLC", dashboardState = "ein-pending" }: TaskDashboardProps) {
   const router = useRouter();
-  const [showModal, setShowModal] = useState(dashboardState === "ein-received");
+  const [showPendingModal, setShowPendingModal] = useState(dashboardState === "ein-pending");
+  const [showReceivedModal, setShowReceivedModal] = useState(dashboardState === "ein-received");
+  const [pendingModalDismissed, setPendingModalDismissed] = useState(false);
 
   useEffect(() => {
     if (dashboardState === "ein-received") {
-      setShowModal(true);
+      setShowReceivedModal(true);
+      setShowPendingModal(false);
+    } else if (dashboardState === "ein-pending") {
+      setShowPendingModal(true);
+      setShowReceivedModal(false);
+      setPendingModalDismissed(false);
     }
   }, [dashboardState]);
+
+  // Auto-trigger EIN received modal 8 seconds after the pending modal is closed
+  useEffect(() => {
+    if (pendingModalDismissed && dashboardState === "ein-pending") {
+      const timer = setTimeout(() => {
+        setShowReceivedModal(true);
+      }, 8000);
+      return () => clearTimeout(timer);
+    }
+  }, [pendingModalDismissed, dashboardState]);
 
   const isPending = dashboardState === "ein-pending";
 
@@ -587,6 +702,7 @@ export default function TaskDashboard({ companyName = "Taylor Tacos, LLC", dashb
           description: "Separating your personal and business finances is a necessary step when establishing your business.",
           category: "Banking",
           categoryColor: "bg-primary-50 text-primary-500",
+          dotColor: "bg-primary-500",
           status: "available",
           bonusText: "Earn $400 bonus",
           hasGoToTask: true,
@@ -597,6 +713,7 @@ export default function TaskDashboard({ companyName = "Taylor Tacos, LLC", dashb
           description: "Required federal filing for all LLCs — available once your EIN is issued.",
           category: "Compliance",
           categoryColor: "bg-neutral-100 text-neutral-500",
+          dotColor: "bg-neutral-500",
           status: "locked",
           lockedText: "Available After EIN",
         },
@@ -606,6 +723,7 @@ export default function TaskDashboard({ companyName = "Taylor Tacos, LLC", dashb
           description: "Separating your personal and business finances is a necessary step when establishing your business.",
           category: "Risk management",
           categoryColor: "bg-quaternary-50 text-quaternary-500",
+          dotColor: "bg-quaternary-500",
           status: "available",
           hasGoToTask: true,
         },
@@ -615,6 +733,7 @@ export default function TaskDashboard({ companyName = "Taylor Tacos, LLC", dashb
           description: "View your formation documents once your state filing is approved.",
           category: "Compliance",
           categoryColor: "bg-neutral-100 text-neutral-500",
+          dotColor: "bg-neutral-500",
           status: "locked",
           lockedText: "Available After EIN",
         },
@@ -624,6 +743,7 @@ export default function TaskDashboard({ companyName = "Taylor Tacos, LLC", dashb
           description: "Separating your personal and business finances is a necessary step when establishing your business.",
           category: "Compliance",
           categoryColor: "bg-neutral-100 text-neutral-500",
+          dotColor: "bg-neutral-500",
           status: "available",
         },
         {
@@ -632,6 +752,7 @@ export default function TaskDashboard({ companyName = "Taylor Tacos, LLC", dashb
           description: "Separating your personal and business finances is a necessary step when establishing your business.",
           category: "Licensing",
           categoryColor: "bg-primary-50 text-primary-500",
+          dotColor: "bg-primary-500",
           status: "completed",
         },
       ]
@@ -643,6 +764,7 @@ export default function TaskDashboard({ companyName = "Taylor Tacos, LLC", dashb
           description: "Your EIN is ready — complete your bank account setup to start accepting payments.",
           category: "Banking",
           categoryColor: "bg-primary-50 text-primary-500",
+          dotColor: "bg-primary-500",
           status: "available",
           bonusText: "Earn $400 bonus",
           partnerNote: "Your EIN has been forwarded to U.S. Bank",
@@ -654,6 +776,7 @@ export default function TaskDashboard({ companyName = "Taylor Tacos, LLC", dashb
           description: "Required federal filing for all LLCs. Your EIN is now available to complete this step.",
           category: "Compliance",
           categoryColor: "bg-neutral-100 text-neutral-500",
+          dotColor: "bg-neutral-500",
           status: "available",
           hasGoToTask: true,
         },
@@ -663,6 +786,7 @@ export default function TaskDashboard({ companyName = "Taylor Tacos, LLC", dashb
           description: "Separating your personal and business finances is a necessary step when establishing your business.",
           category: "Risk management",
           categoryColor: "bg-quaternary-50 text-quaternary-500",
+          dotColor: "bg-quaternary-500",
           status: "available",
           hasGoToTask: true,
         },
@@ -672,6 +796,7 @@ export default function TaskDashboard({ companyName = "Taylor Tacos, LLC", dashb
           description: "Your formation documents are now available for download.",
           category: "Compliance",
           categoryColor: "bg-neutral-100 text-neutral-500",
+          dotColor: "bg-neutral-500",
           status: "available",
           hasGoToTask: true,
         },
@@ -681,6 +806,7 @@ export default function TaskDashboard({ companyName = "Taylor Tacos, LLC", dashb
           description: "Separating your personal and business finances is a necessary step when establishing your business.",
           category: "Compliance",
           categoryColor: "bg-neutral-100 text-neutral-500",
+          dotColor: "bg-neutral-500",
           status: "available",
         },
         {
@@ -689,6 +815,7 @@ export default function TaskDashboard({ companyName = "Taylor Tacos, LLC", dashb
           description: "Separating your personal and business finances is a necessary step when establishing your business.",
           category: "Licensing",
           categoryColor: "bg-primary-50 text-primary-500",
+          dotColor: "bg-primary-500",
           status: "completed",
         },
       ];
@@ -702,7 +829,7 @@ export default function TaskDashboard({ companyName = "Taylor Tacos, LLC", dashb
   };
 
   const handleModalSetUpBank = () => {
-    setShowModal(false);
+    setShowReceivedModal(false);
     setTimeout(() => {
       document.getElementById("next-steps")?.scrollIntoView({ behavior: "smooth" });
     }, 100);
@@ -710,11 +837,22 @@ export default function TaskDashboard({ companyName = "Taylor Tacos, LLC", dashb
 
   return (
     <div className="min-h-screen bg-[#F8F8F8] flex flex-col">
+      {/* EIN Pending Modal */}
+      {showPendingModal && (
+        <EINPendingModal
+          companyName={companyName}
+          onDismiss={() => {
+            setShowPendingModal(false);
+            setPendingModalDismissed(true);
+          }}
+        />
+      )}
+
       {/* EIN Received Modal */}
-      {showModal && (
+      {showReceivedModal && (
         <EINReceivedModal
           companyName={companyName}
-          onDismiss={() => setShowModal(false)}
+          onDismiss={() => setShowReceivedModal(false)}
           onSetUpBank={handleModalSetUpBank}
         />
       )}
@@ -741,7 +879,7 @@ export default function TaskDashboard({ companyName = "Taylor Tacos, LLC", dashb
             </MotionFadeIn>
 
             {/* Checklist section */}
-            <MotionFadeIn className="flex-1 px-lg tablet:px-2xl py-lg tablet:py-xl max-w-[1100px]">
+            <MotionFadeIn id="checklist-section" className="flex-1 px-lg tablet:px-2xl py-lg tablet:py-xl max-w-[1100px]">
               {/* EIN Received banner (only in ein-received state) */}
               {!isPending && <EINReceivedBanner />}
 
