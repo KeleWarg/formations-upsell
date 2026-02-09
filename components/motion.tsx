@@ -38,12 +38,15 @@ export function MotionStagger({
 export function MotionFadeIn({
   children,
   className,
+  id,
 }: {
   children: React.ReactNode;
   className?: string;
+  id?: string;
 }) {
   return (
     <motion.div
+      id={id}
       className={className}
       variants={fadeInVariants}
       transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}

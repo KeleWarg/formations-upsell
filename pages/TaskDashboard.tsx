@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import {
@@ -15,8 +15,16 @@ import {
   Eye,
   CreditCard,
   User,
+  Clock,
+  X,
+  PartyPopper,
+  Bell,
 } from "lucide-react";
 import { MotionFadeIn, MotionStagger } from "@/components/motion";
+
+// ─── DASHBOARD STATE TYPE ─────────────────────────────────
+
+type DashboardState = "ein-pending" | "ein-received";
 
 // ─── TYPES ────────────────────────────────────────────────
 
@@ -38,11 +46,12 @@ interface ChecklistTask {
 // ─── TOP HEADER BAR ──────────────────────────────────────
 
 function TopHeader() {
+  const router = useRouter();
   return (
     <header className="flex items-center justify-between px-xl py-md bg-white border-b border-neutral-100 shrink-0">
-      <div className="flex items-center gap-sm">
+      <button onClick={() => router.push("/")} className="flex items-center gap-sm hover:opacity-80 transition-opacity cursor-pointer">
         <Image src="/logos/formations-logo.svg" alt="Formations" width={141} height={28} />
-      </div>
+      </button>
       <button className="w-[36px] h-[36px] rounded-full border border-neutral-200 flex items-center justify-center text-neutral-400 hover:text-neutral-600 transition-colors">
         <User className="w-5 h-5" />
       </button>
@@ -90,19 +99,29 @@ interface CompanyHeaderProps {
   orderNumber: string;
   ein?: string;
   lastFourCard?: string;
+  dashboardState: DashboardState;
 }
 
-function CompanyHeader({ companyName, orderNumber, ein, lastFourCard }: CompanyHeaderProps) {
+function CompanyHeader({ companyName, orderNumber, ein, lastFourCard, dashboardState }: CompanyHeaderProps) {
+  const isPending = dashboardState === "ein-pending";
+
   return (
     <div className="flex flex-col tablet:flex-row tablet:items-center justify-between py-lg tablet:py-xl px-lg tablet:px-2xl bg-white border-b border-neutral-100 gap-md">
       {/* Left: company name + status */}
       <div className="flex flex-col gap-xs">
         <h2 className="text-body-lg tablet:text-title-xs font-bold text-text-dark-blue">{companyName}</h2>
         <div className="flex items-center gap-lg tablet:gap-xl text-body-xs">
-          <span className="flex items-center gap-xs text-neutral-500">
-            <span className="w-[8px] h-[8px] rounded-full bg-secondary-400" />
-            Registered
-          </span>
+          {isPending ? (
+            <span className="flex items-center gap-xs text-neutral-500">
+              <span className="w-[8px] h-[8px] rounded-full bg-amber-400" />
+              Filing In Progress
+            </span>
+          ) : (
+            <span className="flex items-center gap-xs text-neutral-500">
+              <span className="w-[8px] h-[8px] rounded-full bg-secondary-400" />
+              Registered
+            </span>
+          )}
           <button className="flex items-center gap-xs text-primary-500 font-medium hover:underline">
             <FileText className="w-3.5 h-3.5" /> Access Company Documents
           </button>
@@ -119,16 +138,20 @@ function CompanyHeader({ companyName, orderNumber, ein, lastFourCard }: CompanyH
             <FileText className="w-3.5 h-3.5" /> {orderNumber}
           </span>
         </div>
-        {ein && (
-          <div className="flex flex-col gap-[2px]">
-            <span className="text-neutral-300 flex items-center gap-xs">
-              EIN <Info className="w-3 h-3" />
+        <div className="flex flex-col gap-[2px]">
+          <span className="text-neutral-300 flex items-center gap-xs">
+            EIN <Info className="w-3 h-3" />
+          </span>
+          {isPending ? (
+            <span className="font-medium text-amber-600 flex items-center gap-xs">
+              <Clock className="w-3.5 h-3.5" /> Pending
             </span>
+          ) : (
             <span className="font-medium text-neutral-600 flex items-center gap-xs">
-              {ein} <Eye className="w-3.5 h-3.5 text-primary-500" />
+              {ein || "12-3456789"} <Eye className="w-3.5 h-3.5 text-primary-500" />
             </span>
-          </div>
-        )}
+          )}
+        </div>
         {lastFourCard && (
           <div className="flex flex-col gap-[2px]">
             <span className="text-neutral-300" />
@@ -389,6 +412,123 @@ function NextStepsSection() {
   );
 }
 
+// ─── EIN RECEIVED BANNER ─────────────────────────────────
+
+function EINReceivedBanner() {
+  return (
+    <div className="bg-[#E8F5E9] border border-secondary-200 rounded-lg px-lg py-md flex items-center gap-md mb-lg">
+      <div className="w-10 h-10 rounded-full bg-secondary-500 flex items-center justify-center shrink-0">
+        <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="20 6 9 17 4 12" />
+        </svg>
+      </div>
+      <div className="flex-1">
+        <p className="text-body-sm font-bold text-text-dark-blue">
+          Your EIN has been received!
+        </p>
+        <p className="text-body-xs text-neutral-500">
+          Your EIN is ready — complete your business bank account setup to start accepting payments.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// ─── EIN RECEIVED MODAL ─────────────────────────────────
+
+interface EINReceivedModalProps {
+  companyName: string;
+  onDismiss: () => void;
+  onSetUpBank: () => void;
+}
+
+function EINReceivedModal({ companyName, onDismiss, onSetUpBank }: EINReceivedModalProps) {
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center">
+      {/* Backdrop */}
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onDismiss} />
+
+      {/* Modal */}
+      <div className="relative bg-white rounded-2xl shadow-2xl w-[90%] max-w-[480px] mx-auto overflow-hidden">
+        {/* Close button */}
+        <button
+          onClick={onDismiss}
+          className="absolute top-md right-md w-8 h-8 rounded-full bg-neutral-100 hover:bg-neutral-200 flex items-center justify-center transition-colors z-10"
+        >
+          <X className="w-4 h-4 text-neutral-500" />
+        </button>
+
+        {/* Green celebration header */}
+        <div className="bg-gradient-to-br from-secondary-500 to-secondary-600 px-xl pt-xl pb-lg text-center">
+          <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center mx-auto mb-md">
+            <Bell className="w-8 h-8 text-white" />
+          </div>
+          <h2 className="text-title-sm font-bold text-white mb-xs">
+            Your EIN Has Been Received!
+          </h2>
+          <p className="text-body-sm text-white/80">
+            Great news for {companyName}
+          </p>
+        </div>
+
+        {/* Content */}
+        <div className="px-xl py-xl">
+          {/* EIN display */}
+          <div className="bg-neutral-50 border border-neutral-200 rounded-lg px-lg py-md flex items-center justify-between mb-xl">
+            <div>
+              <span className="text-body-xs text-neutral-400 block">Employer Identification Number</span>
+              <span className="text-title-xs font-bold text-text-dark-blue tracking-wide">12-3456789</span>
+            </div>
+            <div className="w-10 h-10 rounded-full bg-secondary-100 flex items-center justify-center">
+              <svg className="w-5 h-5 text-secondary-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </div>
+          </div>
+
+          {/* Forwarded notice */}
+          <div className="flex items-start gap-sm bg-primary-50 border border-primary-100 rounded-lg px-md py-md mb-xl">
+            <Info className="w-4 h-4 text-primary-500 shrink-0 mt-[2px]" />
+            <p className="text-body-xs text-neutral-600">
+              We&apos;ve forwarded your EIN to <strong>U.S. Bank</strong> to expedite your business checking account setup.
+            </p>
+          </div>
+
+          {/* Recommended next step */}
+          <p className="text-body-xs font-semibold text-neutral-400 uppercase tracking-wide mb-md">
+            Recommended Next Step
+          </p>
+
+          {/* US Bank mini card */}
+          <div className="border border-neutral-200 rounded-lg p-md flex items-center gap-md mb-xl">
+            <div className="w-[50px] h-[50px] rounded-sm overflow-hidden bg-neutral-100 shrink-0">
+              <img src="/partners/us-bank.png" alt="U.S. Bank" className="w-full h-full object-cover" />
+            </div>
+            <div className="flex-1">
+              <p className="text-body-sm font-bold text-text-dark-blue">Open a Business Checking Account</p>
+              <p className="text-body-xs text-secondary-500 font-medium">Earn a $400 bonus*</p>
+            </div>
+          </div>
+
+          {/* CTAs */}
+          <button
+            onClick={onSetUpBank}
+            className="w-full bg-primary-500 hover:bg-primary-600 text-white text-body-sm font-semibold py-md rounded-full transition-colors mb-sm"
+          >
+            Set Up Your Business Bank Account
+          </button>
+          <button
+            onClick={onDismiss}
+            className="w-full text-primary-500 text-body-sm font-medium py-sm hover:underline"
+          >
+            I&apos;ll do this later
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── MOBILE BOTTOM NAV ───────────────────────────────────
 
 function MobileBottomNav() {
@@ -423,66 +563,135 @@ function MobileBottomNav() {
 
 interface TaskDashboardProps {
   companyName?: string;
+  dashboardState?: DashboardState;
 }
 
-export default function TaskDashboard({ companyName = "Taylor Tacos, LLC" }: TaskDashboardProps) {
+export default function TaskDashboard({ companyName = "Taylor Tacos, LLC", dashboardState = "ein-pending" }: TaskDashboardProps) {
   const router = useRouter();
+  const [showModal, setShowModal] = useState(dashboardState === "ein-received");
 
-  const tasks: ChecklistTask[] = [
-    {
-      id: 1,
-      title: "Set Up My U.S. Bank Business Checking Account",
-      description: "Separating your personal and business finances is a necessary step when establishing your business.",
-      category: "Licensing",
-      categoryColor: "bg-primary-50 text-primary-500",
-      status: "available",
-      bonusText: "Earn $200-550 bonus",
-      hasGoToTask: true,
-    },
-    {
-      id: 2,
-      title: "File Your Beneficial Ownership Information Report",
-      description: "Separating your personal and business finances is a necessary step when establishing your business.",
-      category: "Compliance",
-      categoryColor: "bg-neutral-100 text-neutral-500",
-      status: "locked",
-      lockedText: "Available After State Approval",
-    },
-    {
-      id: 3,
-      title: `Protect ${companyName} With Business Insurance`,
-      description: "Separating your personal and business finances is a necessary step when establishing your business.",
-      category: "Risk management",
-      categoryColor: "bg-quaternary-50 text-quaternary-500",
-      status: "available",
-      hasGoToTask: true,
-    },
-    {
-      id: 4,
-      title: "Access Your Business Compliance Documents",
-      description: "Separating your personal and business finances is a necessary step when establishing your business.",
-      category: "Compliance",
-      categoryColor: "bg-neutral-100 text-neutral-500",
-      status: "locked",
-      lockedText: "Available After State Approval",
-    },
-    {
-      id: 5,
-      title: "View Your Customized Business License Report",
-      description: "Separating your personal and business finances is a necessary step when establishing your business.",
-      category: "Compliance",
-      categoryColor: "bg-neutral-100 text-neutral-500",
-      status: "available",
-    },
-    {
-      id: 6,
-      title: "Discover Your Business License Requirements",
-      description: "Separating your personal and business finances is a necessary step when establishing your business.",
-      category: "Licensing",
-      categoryColor: "bg-primary-50 text-primary-500",
-      status: "completed",
-    },
-  ];
+  useEffect(() => {
+    if (dashboardState === "ein-received") {
+      setShowModal(true);
+    }
+  }, [dashboardState]);
+
+  const isPending = dashboardState === "ein-pending";
+
+  // Tasks differ based on dashboard state
+  const tasks: ChecklistTask[] = isPending
+    ? [
+        {
+          id: 1,
+          title: "Set Up My U.S. Bank Business Checking Account",
+          description: "Separating your personal and business finances is a necessary step when establishing your business.",
+          category: "Banking",
+          categoryColor: "bg-primary-50 text-primary-500",
+          status: "available",
+          bonusText: "Earn $400 bonus",
+          hasGoToTask: true,
+        },
+        {
+          id: 2,
+          title: "File Your Beneficial Ownership Information Report",
+          description: "Required federal filing for all LLCs — available once your EIN is issued.",
+          category: "Compliance",
+          categoryColor: "bg-neutral-100 text-neutral-500",
+          status: "locked",
+          lockedText: "Available After EIN",
+        },
+        {
+          id: 3,
+          title: `Protect ${companyName} With Business Insurance`,
+          description: "Separating your personal and business finances is a necessary step when establishing your business.",
+          category: "Risk management",
+          categoryColor: "bg-quaternary-50 text-quaternary-500",
+          status: "available",
+          hasGoToTask: true,
+        },
+        {
+          id: 4,
+          title: "Access Your Business Compliance Documents",
+          description: "View your formation documents once your state filing is approved.",
+          category: "Compliance",
+          categoryColor: "bg-neutral-100 text-neutral-500",
+          status: "locked",
+          lockedText: "Available After EIN",
+        },
+        {
+          id: 5,
+          title: "View Your Customized Business License Report",
+          description: "Separating your personal and business finances is a necessary step when establishing your business.",
+          category: "Compliance",
+          categoryColor: "bg-neutral-100 text-neutral-500",
+          status: "available",
+        },
+        {
+          id: 6,
+          title: "Discover Your Business License Requirements",
+          description: "Separating your personal and business finances is a necessary step when establishing your business.",
+          category: "Licensing",
+          categoryColor: "bg-primary-50 text-primary-500",
+          status: "completed",
+        },
+      ]
+    : [
+        // EIN Received — US Bank resurfaced as top priority, previously locked tasks now available
+        {
+          id: 1,
+          title: "Set Up My U.S. Bank Business Checking Account",
+          description: "Your EIN is ready — complete your bank account setup to start accepting payments.",
+          category: "Banking",
+          categoryColor: "bg-primary-50 text-primary-500",
+          status: "available",
+          bonusText: "Earn $400 bonus",
+          partnerNote: "Your EIN has been forwarded to U.S. Bank",
+          hasGoToTask: true,
+        },
+        {
+          id: 2,
+          title: "File Your Beneficial Ownership Information Report",
+          description: "Required federal filing for all LLCs. Your EIN is now available to complete this step.",
+          category: "Compliance",
+          categoryColor: "bg-neutral-100 text-neutral-500",
+          status: "available",
+          hasGoToTask: true,
+        },
+        {
+          id: 3,
+          title: `Protect ${companyName} With Business Insurance`,
+          description: "Separating your personal and business finances is a necessary step when establishing your business.",
+          category: "Risk management",
+          categoryColor: "bg-quaternary-50 text-quaternary-500",
+          status: "available",
+          hasGoToTask: true,
+        },
+        {
+          id: 4,
+          title: "Access Your Business Compliance Documents",
+          description: "Your formation documents are now available for download.",
+          category: "Compliance",
+          categoryColor: "bg-neutral-100 text-neutral-500",
+          status: "available",
+          hasGoToTask: true,
+        },
+        {
+          id: 5,
+          title: "View Your Customized Business License Report",
+          description: "Separating your personal and business finances is a necessary step when establishing your business.",
+          category: "Compliance",
+          categoryColor: "bg-neutral-100 text-neutral-500",
+          status: "available",
+        },
+        {
+          id: 6,
+          title: "Discover Your Business License Requirements",
+          description: "Separating your personal and business finances is a necessary step when establishing your business.",
+          category: "Licensing",
+          categoryColor: "bg-primary-50 text-primary-500",
+          status: "completed",
+        },
+      ];
 
   const completedCount = tasks.filter((t) => t.status === "completed").length;
 
@@ -492,8 +701,24 @@ export default function TaskDashboard({ companyName = "Taylor Tacos, LLC" }: Tas
     }
   };
 
+  const handleModalSetUpBank = () => {
+    setShowModal(false);
+    setTimeout(() => {
+      document.getElementById("next-steps")?.scrollIntoView({ behavior: "smooth" });
+    }, 100);
+  };
+
   return (
     <div className="min-h-screen bg-[#F8F8F8] flex flex-col">
+      {/* EIN Received Modal */}
+      {showModal && (
+        <EINReceivedModal
+          companyName={companyName}
+          onDismiss={() => setShowModal(false)}
+          onSetUpBank={handleModalSetUpBank}
+        />
+      )}
+
       {/* Top header */}
       <TopHeader />
 
@@ -509,13 +734,17 @@ export default function TaskDashboard({ companyName = "Taylor Tacos, LLC" }: Tas
               <CompanyHeader
                 companyName={companyName}
                 orderNumber="BUHU1236389"
-                ein="**-**"
+                ein="12-3456789"
                 lastFourCard="4427"
+                dashboardState={dashboardState}
               />
             </MotionFadeIn>
 
             {/* Checklist section */}
             <MotionFadeIn className="flex-1 px-lg tablet:px-2xl py-lg tablet:py-xl max-w-[1100px]">
+              {/* EIN Received banner (only in ein-received state) */}
+              {!isPending && <EINReceivedBanner />}
+
               {/* Section title + progress */}
               <div className="flex flex-col gap-sm tablet:gap-md mb-lg tablet:mb-xl">
                 <div className="flex flex-col tablet:flex-row tablet:items-center gap-sm tablet:gap-xl">
@@ -525,7 +754,9 @@ export default function TaskDashboard({ companyName = "Taylor Tacos, LLC" }: Tas
                   <ProgressBar completed={completedCount} total={tasks.length} />
                 </div>
                 <p className="text-body-xs tablet:text-body-sm text-neutral-400">
-                  Complete these essential steps to take {companyName} to the next level
+                  {isPending
+                    ? `Your LLC filing is in progress. Complete these steps while you wait.`
+                    : `Complete these essential steps to take ${companyName} to the next level`}
                 </p>
               </div>
 
@@ -537,10 +768,26 @@ export default function TaskDashboard({ companyName = "Taylor Tacos, LLC" }: Tas
                   </MotionFadeIn>
                 ))}
               </MotionStagger>
+
+              {/* Prototype-only: state switcher (EIN pending → EIN received) */}
+              {isPending && (
+                <div className="mt-xl pt-xl border-t border-dashed border-neutral-200">
+                  <div className="flex items-center gap-md">
+                    <span className="text-[11px] font-semibold text-neutral-400 uppercase tracking-wide">Prototype</span>
+                    <button
+                      onClick={() => router.push("/task-dashboard?state=ein-received")}
+                      className="text-body-xs font-medium text-primary-500 bg-primary-50 px-lg py-sm rounded-full hover:bg-primary-100 transition-colors flex items-center gap-xs"
+                    >
+                      <Bell className="w-3.5 h-3.5" />
+                      Simulate EIN Received
+                    </button>
+                  </div>
+                </div>
+              )}
             </MotionFadeIn>
 
             {/* Your Next Steps section */}
-            <MotionFadeIn className="px-lg tablet:px-2xl py-lg tablet:py-xl max-w-[1100px]">
+            <MotionFadeIn id="next-steps" className="px-lg tablet:px-2xl py-lg tablet:py-xl max-w-[1100px]">
               <NextStepsSection />
             </MotionFadeIn>
           </MotionStagger>

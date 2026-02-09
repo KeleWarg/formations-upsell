@@ -2,6 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { ChevronLeft, Lock, Info, ChevronDown } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -39,14 +40,14 @@ export function Header({ variant = "desktop", securedText = "Secured by Formatio
       <header className="flex items-center justify-between px-[15px] py-lg bg-white border-b border-neutral-100 shadow-header">
         <div className="flex items-center gap-xs">
           {/* Formations logo + Forbes co-brand */}
-          <div className="flex items-center gap-[6px]">
+          <Link href="/" className="flex items-center gap-[6px] hover:opacity-80 transition-opacity">
             <Image src="/logos/formations-logo.svg" alt="Formations" width={70} height={14} />
             <div className="w-px h-[17px] bg-neutral-200" />
             <div className="flex flex-col gap-0.5">
               <span className="text-[6px] font-semibold text-neutral-300 leading-tight">In partnership with</span>
               <Image src="/logos/forbesadvisor-logo.svg" alt="Forbes Advisor" width={56} height={7} />
             </div>
-          </div>
+          </Link>
         </div>
         <div className="flex items-center gap-xs">
           <Lock className="w-4 h-4 text-neutral-400" />
@@ -58,7 +59,7 @@ export function Header({ variant = "desktop", securedText = "Secured by Formatio
 
   return (
     <header className="flex items-center justify-between px-xl py-lg bg-white border-b border-neutral-100 shadow-header">
-      <div className="flex items-center gap-lg">
+      <Link href="/" className="flex items-center gap-lg hover:opacity-80 transition-opacity">
         {/* Formations logo */}
         <Image src="/logos/formations-logo.svg" alt="Formations" width={141} height={28} />
         {/* Divider */}
@@ -68,7 +69,7 @@ export function Header({ variant = "desktop", securedText = "Secured by Formatio
           <span className="text-[10px] font-semibold text-neutral-300 leading-[1.6]">In partnership with</span>
           <Image src="/logos/forbesadvisor-logo.svg" alt="Forbes Advisor" width={111} height={14} />
         </div>
-      </div>
+      </Link>
       <div className="flex items-center gap-sm">
         <Lock className="w-4 h-4 text-neutral-400" />
         <span className="text-body-xs font-medium text-neutral-500">{securedText}</span>
