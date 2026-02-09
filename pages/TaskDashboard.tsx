@@ -500,47 +500,27 @@ function EINReceivedModal({ companyName, onDismiss, onSetUpBank }: EINReceivedMo
             </div>
           </div>
 
-          {/* US Bank card with forwarded + representative notice */}
-          <div className="border border-secondary-200 rounded-lg overflow-hidden mb-xl">
-            {/* Card header */}
-            <div className="bg-[#F6FBF6] px-md py-md flex items-center gap-md border-b border-secondary-100">
-              <div className="w-[44px] h-[44px] rounded-sm overflow-hidden bg-white border border-neutral-100 shrink-0 flex items-center justify-center">
-                <img src="/partners/us-bank.png" alt="U.S. Bank" className="w-full h-full object-cover" />
-              </div>
-              <div className="flex-1">
-                <p className="text-body-sm font-bold text-text-dark-blue">Business Checking Account</p>
-                <p className="text-body-xs text-secondary-500 font-medium">Earn a $400 bonus*</p>
-              </div>
+          {/* Forwarded notice */}
+          <div className="flex items-start gap-sm bg-primary-50 border border-primary-100 rounded-lg px-md py-md mb-xl">
+            <Info className="w-4 h-4 text-primary-500 shrink-0 mt-[2px]" />
+            <p className="text-body-xs text-neutral-600">
+              We&apos;ve forwarded your EIN to <strong>U.S. Bank</strong> to expedite your business checking account setup.
+            </p>
+          </div>
+
+          {/* Recommended next step */}
+          <p className="text-body-xs font-semibold text-neutral-400 uppercase tracking-wide mb-md">
+            Recommended Next Step
+          </p>
+
+          {/* US Bank mini card */}
+          <div className="border border-neutral-200 rounded-lg p-md flex items-center gap-md mb-xl">
+            <div className="w-[50px] h-[50px] rounded-sm overflow-hidden bg-neutral-100 shrink-0">
+              <img src="/partners/us-bank.png" alt="U.S. Bank" className="w-full h-full object-cover" />
             </div>
-
-            {/* Status steps */}
-            <div className="px-md py-md space-y-md">
-              {/* Step 1: EIN forwarded */}
-              <div className="flex items-start gap-sm">
-                <div className="w-6 h-6 rounded-full bg-secondary-500 flex items-center justify-center shrink-0 mt-[1px]">
-                  <svg className="w-3 h-3 text-white" viewBox="0 0 12 12" fill="none">
-                    <path d="M10 3L4.5 8.5L2 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </div>
-                <div>
-                  <p className="text-body-xs font-semibold text-text-dark-blue">Your EIN has been forwarded to U.S. Bank</p>
-                  <p className="text-[11px] text-neutral-400">Just now</p>
-                </div>
-              </div>
-
-              {/* Connector line */}
-              <div className="ml-[11px] w-[2px] h-[12px] bg-neutral-200" />
-
-              {/* Step 2: Representative will reach out */}
-              <div className="flex items-start gap-sm">
-                <div className="w-6 h-6 rounded-full bg-primary-100 border-2 border-primary-300 flex items-center justify-center shrink-0 mt-[1px]">
-                  <User className="w-3 h-3 text-primary-500" />
-                </div>
-                <div>
-                  <p className="text-body-xs font-semibold text-text-dark-blue">A U.S. Bank representative will reach out</p>
-                  <p className="text-[11px] text-neutral-400">To help you complete your account setup</p>
-                </div>
-              </div>
+            <div className="flex-1">
+              <p className="text-body-sm font-bold text-text-dark-blue">Open a Business Checking Account</p>
+              <p className="text-body-xs text-secondary-500 font-medium">Earn a $400 bonus*</p>
             </div>
           </div>
 
