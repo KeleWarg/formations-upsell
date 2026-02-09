@@ -593,7 +593,7 @@ function EINPendingModal({ companyName, onDismiss }: EINPendingModalProps) {
           </p>
 
           {/* Checklist preview */}
-          <div className="border border-neutral-200 rounded-lg p-md space-y-sm mb-xl">
+          <div className="border border-neutral-200 rounded-lg p-md space-y-sm mb-lg">
             {[
               { label: "Set up a business bank account", highlight: true },
               { label: "Get business insurance", highlight: false },
@@ -606,6 +606,20 @@ function EINPendingModal({ companyName, onDismiss }: EINPendingModalProps) {
                 <span className={`text-body-xs ${item.highlight ? "font-medium text-text-dark-blue" : "text-neutral-400"}`}>{item.label}</span>
               </div>
             ))}
+          </div>
+
+          {/* US Bank mini upsell */}
+          <div className="border border-secondary-200 bg-[#F6FBF6] rounded-lg p-md flex items-center gap-md mb-xl">
+            <div className="w-[44px] h-[44px] rounded-sm overflow-hidden bg-white border border-neutral-100 shrink-0 flex items-center justify-center">
+              <img src="/partners/us-bank.png" alt="U.S. Bank" className="w-full h-full object-cover" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-body-xs font-bold text-text-dark-blue leading-tight">Open a Free Business Checking Account</p>
+              <p className="text-body-xs text-secondary-500 font-medium">Earn a $400 bonus*</p>
+            </div>
+            <svg className="w-4 h-4 text-secondary-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
           </div>
 
           {/* CTA */}
